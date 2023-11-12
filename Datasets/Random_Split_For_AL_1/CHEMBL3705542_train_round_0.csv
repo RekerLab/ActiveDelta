@@ -1,0 +1,3 @@
+SMILES,Y
+CC1(C)CCC(CN2CCN(c3ccc(C(=O)NS(=O)(=O)c4ccc(OCC5(F)CCOCC5)c(Cl)c4)c(Oc4cnc(N)c(Cl)c4)c3)CC2)=C(c2ccc(Cl)cc2)C1,10.161150909262744
+CC1(C)CCC(CN2CCN(c3ccc(C(=O)NS(=O)(=O)c4ccc(NCC5COCCO5)c([N+](=O)[O-])c4)c(Oc4cc5cc[nH]c5cc4F)c3)CC2)=C(c2ccc(Cl)cc2)C1,9.718966632752272

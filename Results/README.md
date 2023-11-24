@@ -39,4 +39,4 @@
 * Provides results for 3 repeats of random molecule selection for 200 iterations starting from 2 random molecules.
 
 #### Plotting
-* Contains results from first repeat of active learning with SMILES, true value, predicted value, and iteration result was added.
+* Contains results from first repeat of active learning with SMILES, true value, predicted value, and iteration result was added - used for t-SNE.

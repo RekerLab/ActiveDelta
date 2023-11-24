@@ -66,19 +66,21 @@ datasets = ['CHEMBL1267245',
  'CHEMBL3889083',
  'CHEMBL3889139']
  
-##########
-### CV ###
-##########
+######################################
+### Analysis from Cross-Validation ###
+######################################
+
+all_scores = pd.DataFrame(columns=['Dataset', 'MAE', 'RMSE'])
 
 for dataset in datasets:
+  scoring_intermediate = pd.DataFrame(columns=['MAE', 'RMSE'])
+
   # dataset loading:
-  name =  dataset
-  test_set = pd.read_csv('../Datasets/Train/{}_train.csv'.format(prop)) 
-  trad = pd.DataFrame(columns=['MAE', 'RMSE'])
+  test_set = pd.read_csv('../Datasets/Train/{}_train.csv'.format(dataset)) 
 
   for j in range(5):
-    preds = pd.read_csv('../Results/Cross_Validation_Results/DeepDelta5_CV/{}_DeepDelta_{}.csv'.format(prop, j)).T 
-    preds.columns =['True', 'Delta', 'Traditional']
+    preds = pd.read_csv('../Results/Cross_Validation_Results/DeepDelta5_CV/{}_DeepDelta5_{}.csv'.format(dataset, j)).T 
+    preds.columns =['True', 'Delta']
 
     # Set up for cross validation
     cv = KFold(n_splits=10, random_state=1, shuffle=True)
@@ -94,63 +96,56 @@ for dataset in datasets:
       datapoint_y += [pair_subset_test.SMILES_y]
       del pair_subset_test
 
-    paired = pd.DataFrame(data={'SMILES_x':  np.concatenate(datapoint_x), 'SMILES_y':  np.concatenate(datapoint_y)})
+    datapoints = pd.DataFrame(data={'SMILES_x':  np.concatenate(datapoint_x), 'SMILES_y':  np.concatenate(datapoint_y)})
 
     trues = preds['True'].tolist()
     trues = [float(i) for i in trues]
-    paired['True'] = trues
+    datapoints['True'] = trues
 
     Deltas = preds['Delta']
     Deltas = [float(i) for i in Deltas]
-    paired['Delta_preds'] = Deltas
+    datapoints['Delta_preds'] = Deltas
     
     # Grab the datapoints with matching SMILES 
-    matching = datapoints[datapoints['X'] == datapoints['Y']]
+    matching = datapoints[datapoints['SMILES_x'] == datapoints['SMILES_y']]
 
+    # Calculate statistics
     MAE = metrics.mean_absolute_error(matching['True'],matching['Delta_preds'])
     RMSE = math.sqrt(metrics.mean_squared_error(matching['True'], matching['Delta_preds']))
     R2 = metrics.r2_score(matching['True'], matching['Delta_preds'])
-
     scoring = pd.DataFrame({'MAE': [round(MAE, 4)], 'RMSE': [round(RMSE, 4)]})
-    trad = trad.append(scoring)
+    scoring_intermediate = pd.concat([scoring, scoring_intermediate])
 
   #Statistics for all rounds
-  average = pd.DataFrame({'MAE': [round(np.mean(trad['MAE']), 3)], 
-                          'RMSE': [round(np.mean(trad['RMSE']), 3)]})
-  std = pd.DataFrame({'MAE': [round(np.std(trad['MAE']), 3)], 
-                      'RMSE': [round(np.std(trad['RMSE']), 3)]})
-  trad = trad.append(average)
-  trad = trad.append(std)
+  average = pd.DataFrame({'MAE': [round(np.mean(scoring_intermediate['MAE']), 3)], 
+                          'RMSE': [round(np.mean(scoring_intermediate['RMSE']), 3)]})
+  std = pd.DataFrame({'MAE': [round(np.std(scoring_intermediate['MAE']), 3)], 
+                      'RMSE': [round(np.std(scoring_intermediate['RMSE']), 3)]})
 
-  #Make summary statistics easy to implemented into Prism
-  scores = pd.DataFrame({'Dataset': name,
-                    'MAE Mean': average["MAE"], 
-                    'MAE STD': std["MAE"],
-                    'MAE N': '5', 
-                    'RMSE Mean': average["RMSE"], 
-                    'RMSE STD': std["RMSE"],
-                    'RMSE N': '5'})
-  all_scores = all_scores.append(scores)
+  #Make summary statistics 
+  scores = pd.DataFrame({'Dataset': dataset,
+                    'MAE': average["MAE"].astype(str) + "±" + std["MAE"].astype(str),
+                    'RMSE': average["RMSE"].astype(str) + "±" + std["RMSE"].astype(str)})
+  all_scores = pd.concat([all_scores, scores])
 
 all_scores.to_csv("DeepDelta_CV_SameMolecularPairs.csv", index = False) # Save results 
 
 
 
 
-###########
-### Ext ###
-###########
+########################################
+### Analysis from External Test Sets ###
+########################################
 
 all_scores = pd.DataFrame(columns=['Dataset', 'MAE', 'RMSE'])
 
 for dataset in datasets:
+  scoring_intermediate = pd.DataFrame(columns=['MAE', 'RMSE'])
+  
   # dataset loading:
-  name =  dataset
-  test_set = pd.read_csv('../Datasets/Test/{}_test.csv'.format(prop)) 
-  trad = pd.DataFrame(columns=['MAE', 'RMSE'])
-
-  preds = pd.read_csv('../Results/External_Test_Results/DeepDelta5_Ext_Test/{}_DeepDelta_Test.csv'.format(prop)).T 
-  preds.columns =['True', 'Delta', 'Traditional']
+  test_set = pd.read_csv('../Datasets/Test/{}_test.csv'.format(dataset)) 
+  preds = pd.read_csv('../Results/External_Test_Results/DeepDelta5_Ext_Test/{}_DeepDelta5_Test.csv'.format(dataset)).T 
+  preds.columns =['True', 'Delta']
 
   datapoint_x = []
   datapoint_y = []
@@ -160,33 +155,33 @@ for dataset in datasets:
   datapoint_y += [pair_subset_test.SMILES_y]
   del pair_subset_test
 
-  paired = pd.DataFrame(data={'SMILES_x':  np.concatenate(datapoint_x), 'SMILES_y':  np.concatenate(datapoint_y)})
+  datapoints = pd.DataFrame(data={'SMILES_x':  np.concatenate(datapoint_x), 'SMILES_y':  np.concatenate(datapoint_y)})
 
   trues = preds['True'].tolist()
   trues = [float(i) for i in trues]
-  paired['True'] = trues
+  datapoints['True'] = trues
 
   Deltas = preds['Delta']
   Deltas = [float(i) for i in Deltas]
-  paired['Delta_preds'] = Deltas
+  datapoints['Delta_preds'] = Deltas
   
   # Grab the datapoints with matching SMILES 
-  matching = datapoints[datapoints['X'] == datapoints['Y']]
+  matching = datapoints[datapoints['SMILES_x'] == datapoints['SMILES_y']]
 
+  # Calculate statistics
   MAE = metrics.mean_absolute_error(matching['True'],matching['Delta_preds'])
   RMSE = math.sqrt(metrics.mean_squared_error(matching['True'], matching['Delta_preds']))
   R2 = metrics.r2_score(matching['True'], matching['Delta_preds'])
-
-  scoring = pd.DataFrame({'MAE': [round(MAE, 4)], 'RMSE': [round(RMSE, 4)]})
-  trad = trad.append(scoring)
+  scoring = pd.DataFrame({'MAE': [round(MAE, 3)], 'RMSE': [round(RMSE, 3)]})
+  scoring_intermediate = pd.concat([scoring, scoring_intermediate])
 
   #Make Summary Statistics Easy to put into a table 
-  final = pd.DataFrame({'Dataset': name,  
-                    'MAE': trad["MAE"], 
-                    'RMSE': trad["RMSE"]})
-  all_scores = all_scores.append(final)
+  scores = pd.DataFrame({'Dataset': dataset,  
+                    'MAE': scoring_intermediate["MAE"], 
+                    'RMSE': scoring_intermediate["RMSE"]})
+  all_scores = pd.concat([all_scores, scores])
 
-all_scores.to_csv("DeepDelta_Exy_SameMolecularPairs.csv", index = False) # Save results 
+all_scores.to_csv("DeepDelta_Ext_SameMolecularPairs.csv", index = False) # Save results 
 
 
 

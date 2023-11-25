@@ -78,18 +78,18 @@ all_scoresM = pd.DataFrame(columns=['Dataset', 'Pearson\'s r RF', 'MAE RF', 'RMS
                                     'Pearson\'s r CP', 'MAE CP', 'RMSE CP', 'Pearson\'s r DD', 'MAE DD', 'RMSE DD']) # For pairs with Matching Scaffolds
 
 # Evaluate Matching and Non-matching Scaffold Pairs for all Datasets
-for name in datasets:
-    dataset = pd.read_csv('../Datasets/Train/{}_train.csv'.format(prop)) # Training dataset
+for dataset in datasets:
+    dataframe = pd.read_csv('../Datasets/Train/{}_train.csv'.format(dataset)) # Training dataset
 
     # 3 Models to Evaluate
     # 1 - Random Forest 
-    predictions_RF = pd.read_csv('../Results/Cross_Validation_Results/RandomForest_CV/{}_RandomForest_1.csv'.format(name)).T
+    predictions_RF = pd.read_csv('../Results/Cross_Validation_Results/RandomForest_CV/{}_RandomForest_1.csv'.format(dataset)).T
     predictions_RF.columns =['True', 'Delta']
     # 2 - ChemProp
-    predictions_CP = pd.read_csv('../Results/Cross_Validation_Results/ChemProp50_CV/{}_ChemProp50_1.csv'.format(name)).T
+    predictions_CP = pd.read_csv('../Results/Cross_Validation_Results/ChemProp50_CV/{}_ChemProp50_1.csv'.format(dataset)).T
     predictions_CP.columns =['True', 'Delta']
     # 3 - DeepDelta
-    predictions_DD = pd.read_csv('../Results/Cross_Validation_Results/DeepDelta5_CV/{}_DeepDelta_1.csv'.format(name)).T
+    predictions_DD = pd.read_csv('../Results/Cross_Validation_Results/DeepDelta5_CV/{}_DeepDelta5_1.csv'.format(dataset)).T
     predictions_DD.columns =['True', 'Delta']
 
     # Prepare Scaffolds
@@ -149,7 +149,7 @@ for name in datasets:
     MAE_NM_DD = metrics.mean_absolute_error(nonmatching["True"], (nonmatching['DeltaDD']))
     RMSE_NM_DD = math.sqrt(metrics.mean_squared_error(nonmatching["True"], (nonmatching['DeltaDD'])))
 
-    scoringNM = pd.DataFrame({'Dataset': [name], 'Pearson\'s r RF': [round(pearson_NM_RF[0], 4)], 'MAE RF': [round(MAE_NM_RF, 4)], 'RMSE RF': [round(RMSE_NM_RF, 4)],
+    scoringNM = pd.DataFrame({'Dataset': [dataset], 'Pearson\'s r RF': [round(pearson_NM_RF[0], 4)], 'MAE RF': [round(MAE_NM_RF, 4)], 'RMSE RF': [round(RMSE_NM_RF, 4)],
                             'Pearson\'s r CP': [round(pearson_NM_CP[0], 4)], 'MAE CP': [round(MAE_NM_CP, 4)], 'RMSE CP': [round(RMSE_NM_CP, 4)],
                             'Pearson\'s r DD': [round(pearson_NM_DD[0], 4)], 'MAE DD': [round(MAE_NM_DD, 4)], 'RMSE DD': [round(RMSE_NM_DD, 4)]})
 
@@ -168,7 +168,7 @@ for name in datasets:
     MAE_M_DD = metrics.mean_absolute_error(matching["True"], (matching['DeltaDD']))
     RMSE_M_DD = math.sqrt(metrics.mean_squared_error(matching["True"], (matching['DeltaDD'])))
 
-    scoringM = pd.DataFrame({'Dataset': [name], 'Pearson\'s r RF': [round(pearson_M_RF[0], 4)], 'MAE RF': [round(MAE_M_RF, 4)], 'RMSE RF': [round(RMSE_M_RF, 4)],
+    scoringM = pd.DataFrame({'Dataset': [dataset], 'Pearson\'s r RF': [round(pearson_M_RF[0], 4)], 'MAE RF': [round(MAE_M_RF, 4)], 'RMSE RF': [round(RMSE_M_RF, 4)],
                             'Pearson\'s r CP': [round(pearson_M_CP[0], 4)], 'MAE CP': [round(MAE_M_CP, 4)], 'RMSE CP': [round(RMSE_M_CP, 4)],
                             'Pearson\'s r DD': [round(pearson_M_DD[0], 4)], 'MAE DD': [round(MAE_M_DD, 4)], 'RMSE DD': [round(RMSE_M_DD, 4)]})
 

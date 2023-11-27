@@ -169,7 +169,7 @@ class Trad_ChemProp(abstractDeltaModel):
         temp_datafile.close()
 
 
-    def predict(self, x): 
+    def predict(self, x):  # Used for predicting molecular differences
 
         dataset = pd.DataFrame(x)
         temp_datafile = tempfile.NamedTemporaryFile()
@@ -194,6 +194,31 @@ class Trad_ChemProp(abstractDeltaModel):
         temp_predfile.close()
 
         return preds.Y_y - preds.Y_x   # Calculate and return the delta values
+
+
+    def predict_single(self, x):  # Used for predicting for only one molecule
+
+        dataset = pd.DataFrame(x)
+        temp_datafile = tempfile.NamedTemporaryFile()
+        dataset.to_csv(temp_datafile.name, index=False)
+        temp_predfile = tempfile.NamedTemporaryFile()
+
+        arguments = [
+            '--test_path', temp_datafile.name,
+            '--preds_path', temp_predfile.name, 
+            '--checkpoint_dir', self.dirpath_single,
+            '--number_of_molecules', '1'
+        ]
+
+        args = chemprop.args.PredictArgs().parse_args(arguments)
+        chemprop.train.make_predictions(args=args) # Make prediction
+
+        predictions = pd.read_csv(temp_predfile.name)['Y'] 
+
+        temp_datafile.close()
+        temp_predfile.close()
+
+        return predictions  
     
     def __str__(self):
         return "ChemProp" + str(self.epochs)
@@ -212,13 +237,19 @@ class Trad_RF(abstractDeltaModel):
         fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
         self.model.fit(fps,y) # Fit using traditional methods
 
-    def predict(self, x):
+    def predict(self, x): # Used for predicting molecular differences
         mols = [Chem.MolFromSmiles(s) for s in x]
         fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
         
         predictions = pd.DataFrame(self.model.predict(fps)) # Predict using traditional methods
         results = pd.merge(predictions,predictions,how='cross') # Cross merge into pairs after predictions
         return results['0_y'] - results['0_x']  # Calculate and return the delta values
+
+    def predict_single(self, x): # Used for predicting for only one molecule
+        mols = [Chem.MolFromSmiles(s) for s in x]
+        fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
+        predictions = pd.Series(self.model.predict(fps))
+        return predictions
     
     def __str__(self):
         return "RandomForest"

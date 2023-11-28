@@ -28,12 +28,12 @@ To use ChemProp with GPUs, you will need:
 
 ### Code
 
-Python code for evaluating ActiveDelta and traditional models based on their ability to predict potency differences between two molecules and perform active learning.
+Python code for evaluating ActiveDelta and traditional models based on their ability to predict potency differences between two molecules, identify the most potent lead in external test sets, and perform exploitative active learning.
 
 ### Datasets
 
-Curated data for 56 potency benchmarking training and test sets from [SIMPD](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189). 
-Also contains 3 random splits of the training data used for our exploitative active learning evaluations.
+56 curated benchmarking training and test sets for potency prediction from [SIMPD](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189) 
+and 3 random splits of the training data used for our exploitative active learning evaluations.
 
 ### Results
 

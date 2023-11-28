@@ -1,27 +1,35 @@
 ## Cross_Validation_Results
 
 #### ChemProp50_CV
-* Provides results for 5x10-fold cross-validation on 56 benchmarking datasets for ChemProp with 50 epochs.
+* Provides results for 5x10-fold cross-validation on 56 cross-merged benchmarking datasets for ChemProp with 50 epochs.
 
 #### DeepDelta5_CV
-* Provides results for 5x10-fold cross-validation on 56 benchmarking datasets for the DeepDelta approach with 5 epochs.
+* Provides results for 5x10-fold cross-validation on 56 cross-merged benchmarking datasets for the DeepDelta approach with 5 epochs.
 
 #### RandomForest_CV
-* Provides results for 5x10-fold cross-validation on on 56 benchmarking datasets for Random Forest.
+* Provides results for 5x10-fold cross-validation on on 56 cross-merged benchmarking datasets for Random Forest.
 
 
 
 ## External_Test_Results
 
 #### ChemProp50_Ext_Test
-* Provides results for 56 external test sets for ChemProp with 50 epochs.
+* Provides results for 56 cross-merged external test sets for ChemProp with 50 epochs.
 
 #### DeepDelta5_Ext_Test
-* Provides results for 56 external test sets for the DeepDelta approach with 5 epochs.
+* Provides results for 56 cross-merged external test sets for the DeepDelta approach with 5 epochs.
 
 #### RandomForest_Ext_Test
-* Provides results for 56 external test sets for Random Forest.
+* Provides results for 56 cross-merged external test sets for Random Forest.
 
+#### ChemProp50_Ext_Test_Single_Predictions
+* Provides results for 56 external test sets for ChemProp with 50 epochs (for most potent lead identification).
+
+#### DeepDelta5_Ext_Test_Single_Predictions
+* Provides results for 56 external test sets for the DeepDelta approach with 5 epochs (for most potent lead identification).
+
+#### RandomForest_Ext_Test_Single_Predictions
+* Provides results for 56 external test sets for Random Forest (for most potent lead identification).
   
 
 ## Exploitative_Active_Learning_Results

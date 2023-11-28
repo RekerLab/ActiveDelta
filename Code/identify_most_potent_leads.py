@@ -124,9 +124,9 @@ for model in models:
               inter_df = pd.DataFrame({'SMILES': [SMILES], 'True': [working_df['True'].mean()],
                                        'Pred': [working_df['Pred'].mean()]}) # Get the Mean value 
               molecule_values = pd.concat([molecule_values, inter_df]) 
-              molecule_values = molecule_values.drop(['SMILES'], axis = 1)
-              molecule_values = molecule_values.reset_index(drop=True)
-              molecule_values = molecule_values.T
+            molecule_values = molecule_values.drop(['SMILES'], axis = 1)
+            molecule_values = molecule_values.reset_index(drop=True)
+            molecule_values = molecule_values.T
             molecule_values.to_csv("{}_{}_Test_Single_Predictions.csv".format(prop, model), index=False) # Save results
             
  

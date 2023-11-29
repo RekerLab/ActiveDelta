@@ -17,7 +17,6 @@ from models import *
 
 def cross_validation(x, y, prop, model, k=10, seed=1): # provide option to cross validate with x and y instead of file
   kf = KFold(n_splits=k, random_state=seed, shuffle=True)
-  cnt = 1 # Used to keep track of current fold
   preds = []
   vals  = []
 

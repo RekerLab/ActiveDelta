@@ -36,9 +36,9 @@ def cross_validation_file(data_path, prop, model, k=10, seed=1): # Cross-validat
 
 
 
-###################
-####  5x10 CV  ####
-###################
+############################
+### Original 56 Datasets ###
+############################
 
 properties = ['CHEMBL1267245',
  'CHEMBL1267247',
@@ -103,7 +103,7 @@ for model in models:
     for prop in properties:
         delta = pd.DataFrame(columns=['Pearson\'s r', 'MAE', 'RMSE']) # For storing results
         for i in range(5): # Allow for 5x10-fold cross validation
-            dataset = '../Datasets/Train/{}_train.csv'.format(prop) # Training dataset
+            dataset = '../Datasets/Original_56/Train/{}_train.csv'.format(prop) # Training dataset
             results = cross_validation_file(data_path=dataset, prop = prop, model=model, k=10, seed = i) # Run cross-validation
 
             pd.DataFrame(results).to_csv("{}_{}_{}.csv".format(prop, str(model), i), index=False) # Save results
@@ -131,4 +131,142 @@ for model in models:
         delta.to_csv("{}_{}_delta_scoring.csv".format(prop, model)) # Save data
         
 
+ 
+###########################
+### Updated 99 Datasets ###
+###########################
 
+
+properties = ['CHEMBL1075104-1',
+'CHEMBL4153-1',
+'CHEMBL4361-1',
+'CHEMBL4361-2',
+'CHEMBL4616-1',
+'CHEMBL4792-1',
+'CHEMBL4792-2',
+'CHEMBL4794-1',
+'CHEMBL4860-1',
+'CHEMBL4908-1',
+'CHEMBL4908-2',
+'CHEMBL5071-1',
+'CHEMBL5102-1',
+'CHEMBL5112-1',
+'CHEMBL5113-1',
+'CHEMBL5113-2',
+'CHEMBL302-1',
+'CHEMBL313-1',
+'CHEMBL313-2',
+'CHEMBL318-1',
+'CHEMBL318-2',
+'CHEMBL344-1',
+'CHEMBL344-2',
+'CHEMBL3155-1',
+'CHEMBL3227-1',
+'CHEMBL3371-1',
+'CHEMBL3510-1',
+'CHEMBL3729-1',
+'CHEMBL3759-1',
+'CHEMBL3769-1',
+'CHEMBL3837-1',
+'CHEMBL3952-1',
+'CHEMBL3952-2',
+'CHEMBL3952-3',
+'CHEMBL4005-1',
+'CHEMBL4078-1',
+'CHEMBL4105864-1',
+'CHEMBL240-1',
+'CHEMBL240-2',
+'CHEMBL245-1',
+'CHEMBL251-1',
+'CHEMBL253-1',
+'CHEMBL255-1',
+'CHEMBL259-1',
+'CHEMBL264-1',
+'CHEMBL269-1',
+'CHEMBL269-2',
+'CHEMBL270-1',
+'CHEMBL270-2',
+'CHEMBL270-3',
+'CHEMBL273-1',
+'CHEMBL273-2',
+'CHEMBL284-1',
+'CHEMBL287-1',
+'CHEMBL2492-1',
+'CHEMBL2820-1',
+'CHEMBL2954-1',
+'CHEMBL222-1',
+'CHEMBL222-2',
+'CHEMBL223-1',
+'CHEMBL224-1',
+'CHEMBL224-2',
+'CHEMBL225-1',
+'CHEMBL225-2',
+'CHEMBL228-1',
+'CHEMBL228-2',
+'CHEMBL229-1',
+'CHEMBL229-2',
+'CHEMBL231-1',
+'CHEMBL232-1',
+'CHEMBL233-1',
+'CHEMBL234-1',
+'CHEMBL236-1',
+'CHEMBL237-1',
+'CHEMBL238-1',
+'CHEMBL2326-1',
+'CHEMBL2366517-1',
+'CHEMBL210-1',
+'CHEMBL211-1',
+'CHEMBL214-1',
+'CHEMBL216-1',
+'CHEMBL217-1',
+'CHEMBL218-1',
+'CHEMBL219-1',
+'CHEMBL219-2',
+'CHEMBL1800-1',
+'CHEMBL1821-1',
+'CHEMBL1833-1',
+'CHEMBL1833-2',
+'CHEMBL1862-1',
+'CHEMBL1871-1',
+'CHEMBL1889-1',
+'CHEMBL1945-1',
+'CHEMBL1946-1',
+'CHEMBL2014-1',
+'CHEMBL2035-1',
+'CHEMBL2056-1',
+'CHEMBL1293269-1',
+'CHEMBL1908389-1']
+
+models = [DeepDelta(), Trad_ChemProp(), Trad_RF()]
+
+for model in models:
+    for prop in properties:
+        delta = pd.DataFrame(columns=['Pearson\'s r', 'MAE', 'RMSE']) # For storing results
+        for i in range(5): # Allow for 5x10-fold cross validation
+            dataset = '../Datasets/Updated_99/Train/{}_train.csv'.format(prop) # Training dataset
+            results = cross_validation_file(data_path=dataset, prop = prop, model=model, k=10, seed = i) # Run cross-validation
+
+            pd.DataFrame(results).to_csv("{}_{}_{}.csv".format(prop, str(model), i), index=False) # Save results
+            # If you .T the dataframe, then the first column is ground truth, the second is predictions
+
+            # Read saved dataframe to calculate statistics
+            df = pd.read_csv("{}_{}_{}.csv".format(prop, model, i)).T
+            df.columns =['True', 'Delta']
+            trues = df['True'].tolist()
+            preds = df['Delta'].tolist() 
+            
+            # Calculate statistics for each round
+            pearson = stats.pearsonr(trues, preds)
+            MAE = metrics.mean_absolute_error(trues, preds)
+            RMSE = math.sqrt(metrics.mean_squared_error(trues, preds))
+            scoring = pd.DataFrame({'Pearson\'s r': [round(pearson[0], 4)], 'MAE': [round(MAE, 4)], 'RMSE': [round(RMSE, 4)]})
+            delta = pd.concat([delta, scoring])
+
+        # Calculate overall statistics 
+        average = pd.DataFrame({'Pearson\'s r': [round(np.mean(delta['Pearson\'s r']), 3)], 'MAE': [round(np.mean(delta['MAE']), 3)], 'RMSE': [round(np.mean(delta['RMSE']), 3)]})
+        std = pd.DataFrame({'Pearson\'s r': [round(np.std(delta['Pearson\'s r']), 3)], 'MAE': [round(np.std(delta['MAE']), 3)], 'RMSE': [round(np.std(delta['RMSE']), 3)]})
+        delta = pd.concat([delta, average])
+        delta = pd.concat([delta, std])
+        delta = delta.set_index([pd.Index([1, 2, 3, 4, 5, 'Avg', 'Std. Dev.'])])
+        delta.to_csv("{}_{}_delta_scoring.csv".format(prop, model)) # Save data
+        

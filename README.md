@@ -32,8 +32,7 @@ Python code for evaluating ActiveDelta and traditional models based on their abi
 
 ### Datasets
 
-56 curated benchmarking training and test sets for potency prediction from [SIMPD](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189) 
-and 3 random splits of the training data used for our exploitative active learning evaluations.
+56 curated benchmarking training and test sets for potency prediction from the [SIMPD preprint](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189), 99 curated benchmarking training and test sets from the [SIMPD publication](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-023-00787-9), and 3 random splits of the training data used for our exploitative active learning evaluations.
 
 ### Results
 

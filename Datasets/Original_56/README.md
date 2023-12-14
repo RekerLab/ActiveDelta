@@ -10,5 +10,5 @@
 * 56 benchmarking datasets for training from the [SIMPD preprint](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189).
 
 #### ChEMBl_Datasets_Detailed_Information.xlsx
-* Excel sheet providing the standard type, target, and description for each of the 56 datasets from the [SIMPD preprint](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189). Information derived from [ChEMBL](https://www.ebi.ac.uk/chembl/) where the SIMPD datasets were originally derived from.
+* Excel sheet providing the standard type, target, and description for each of the 56 datasets from the [SIMPD preprint](https://chemrxiv.org/engage/chemrxiv/article-details/6406049e6642bf8c8f10e189). Description derived from [ChEMBL](https://www.ebi.ac.uk/chembl/) where the SIMPD datasets were originally derived from.
 

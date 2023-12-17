@@ -10,5 +10,5 @@
 * 99 benchmarking datasets for training from the [SIMPD publication](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-023-00787-9).
 
 #### full_chembl_assay_list.csv
-* Excel sheet providing the dataset, target, assay organism, assay BAO format, and size for each of the 99 datasets from [SIMPD](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-023-00787-9). 
+* Excel sheet providing the dataset, target, assay organism, assay BAO format, and size for each of the 99 datasets from the [SIMPD publication](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-023-00787-9). 
 

@@ -132,7 +132,7 @@ for model in models:
             molecule_values = molecule_values.drop(['SMILES'], axis = 1)
             molecule_values = molecule_values.reset_index(drop=True)
             molecule_values = molecule_values.T
-            molecule_values.to_csv("{}_{}_Test_Single_Predictions_Original_56.csv".format(prop, model), index=False) # Save results
+            molecule_values.to_csv("{}_{}_Test_Single_Predictions.csv".format(prop, model), index=False) # Save results
             
  
  
@@ -296,4 +296,4 @@ for model in models:
             molecule_values = molecule_values.drop(['SMILES'], axis = 1)
             molecule_values = molecule_values.reset_index(drop=True)
             molecule_values = molecule_values.T
-            molecule_values.to_csv("{}_{}_Test_Single_Predictions_Updated_99.csv".format(prop, model), index=False) # Save results
+            molecule_values.to_csv("{}_{}_Test_Single_Predictions.csv".format(prop, model), index=False) # Save results

@@ -13,20 +13,9 @@
 #### external_test.py
 * Test model performance on external test sets. 
 
-#### identify_most_potent_leads.py
-* Use models to identify the most potent leads in the external test sets.
-
 #### models.py
 * Functions for [DeepDelta](https://github.com/RekerLab/ActiveDelta), [ChemProp](https://github.com/chemprop/chemprop), and [Random Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) machine learning models.
 
-#### same_molecule_pairs.py
-* Calculate property differences of same molecule pairs for Eq 1 (with same molecule for both inputs, predictions should be zero):
-```math
-DeepDelta(x,x) = 0. 
-```
-
-#### scaffold_analysis.py
-* Compare model performance on molecular pairs with shared scaffolds to pairs that do not share scaffolds. 
 
 
 

@@ -14,7 +14,7 @@
 * Test model performance on external test sets. 
 
 #### models.py
-* Functions for [DeepDelta](https://github.com/RekerLab/ActiveDelta), [ChemProp](https://github.com/chemprop/chemprop), and [Random Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) machine learning models.
+* Functions for [ActiveDelta](https://github.com/RekerLab/ActiveDelta), [ChemProp](https://github.com/chemprop/chemprop), and [Random Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html) machine learning models.
 
 
 

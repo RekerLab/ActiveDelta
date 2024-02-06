@@ -58,15 +58,10 @@ def get_color_gradient(color1, color2, n):
     rgb_colors = [((1-mix)*color1_rgb + (mix*color2_rgb)) for mix in mix_pcts]
     return ["#" + "".join([format(int(round(val*255)), "02x") for val in item]) for item in rgb_colors]
     
-    
-
-############################
-### Original 56 Datasets ###
-############################   
 
 
 # Adjustable parameters 
-dataset = 'CHEMBL3887887' # Dataset of interest
+dataset = 'CHEMBL3887887' # Dataset of interest ADJUST
 start = 20 # Which iteration you want to start plotting with (starts at 1)
 end = 41 # Which iteration you want to end plotting with
 colors = get_color_gradient('#DDDDDD', '#000000', end-start+2) # Choose color scale for arrows in hex code
@@ -78,7 +73,7 @@ colors = get_color_gradient('#DDDDDD', '#000000', end-start+2) # Choose color sc
 #############
     
 # Read training dataset
-df = pd.read_csv('../Datasets/Original_56/Train/{}_train.csv'.format(dataset)) 
+df = pd.read_csv('../Datasets/Train/{}_train.csv'.format(dataset)) 
 
 # Convert the SMILES from our dataframe to fingerprints
 fp_list = fp_list_from_smiles_list(df.SMILES)
@@ -106,7 +101,7 @@ cnt = 0 # Counter for model colors
 for model in models:
     
     # Read
-    result_df = pd.read_csv('../Results/Original_56/Exploitative_Active_Learning_Results/Plotting/{}/{}_train_round_{}.csv'.format(model, dataset, model)).rename({'Y': 'Values'}, axis=1)
+    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/Plotting/{}/{}_train_round_{}.csv'.format(model, dataset, model)).rename({'Y': 'Values'}, axis=1)
 
     tsne_df2 = pd.merge(tsne_df, result_df, on=['SMILES'], how='inner', indicator=False)
 
@@ -142,83 +137,3 @@ for model in models:
     cnt += 1
     
     
-
-###########################
-### Updated 99 Datasets ###
-###########################  
-
-
-# Adjustable parameters 
-dataset = 'CHEMBL3887887' # Dataset of interest # ADJUST 
-start = 20 # Which iteration you want to start plotting with (starts at 1)
-end = 41 # Which iteration you want to end plotting with
-colors = get_color_gradient('#DDDDDD', '#000000', end-start+2) # Choose color scale for arrows in hex code
-
-    
-#############
-### t-SNE ###
-#############
-    
-# Read training dataset
-df = pd.read_csv('../Datasets/Updated_99/Train/{}_train.csv'.format(dataset)) 
-
-# Convert the SMILES from our dataframe to fingerprints
-fp_list = fp_list_from_smiles_list(df.SMILES)
-
-# Perform principal component analysis (PCA) on the fingerprints.
-pca = PCA(n_components=50)
-crds = pca.fit_transform(fp_list)
-   
-# Run the t-sne on the 50 principal component database we created above. 
-%time crds_embedded = TSNE(n_components=2).fit_transform(crds)
-tsne_df = pd.DataFrame(crds_embedded,columns=["X","Y"])
-tsne_df['SMILES'] = df['SMILES']
-    
-
-
-
-################
-### Plotting ###    
-################
-
-models = ['Random', 'RF', 'CP', 'DD']
-model_color = ['k', '#bc3754', '#31688e', '#721f81']
-cnt = 0 # Counter for model colors
-
-for model in models:
-    
-    # Read
-    result_df = pd.read_csv('../Results/Updated_99/Exploitative_Active_Learning_Results/Plotting/{}/{}_train_round_{}.csv'.format(model, dataset, model)).rename({'Y': 'Values'}, axis=1)
-
-    tsne_df2 = pd.merge(tsne_df, result_df, on=['SMILES'], how='inner', indicator=False)
-
-    # Plotting
-    fig= plt.figure()
-
-    # Plot background values
-    ax = sns.scatterplot(data=tsne_df,x="X",y="Y",color='lightblue', s=50)
-
-    # Plot top ten percent of values
-    top_ten_percent = pd.DataFrame(tsne_df2.nlargest(len(tsne_df2)//10, 'Values'))
-    ax = sns.scatterplot(data=top_ten_percent,x="X",y="Y", marker="*", s=300, color='blue')
-
-
-    for iter in range(start,end + 1):
-      iteration_df = tsne_df2.loc[tsne_df2['Iteration'] == iter] # Current iteration
-      iteration_next_df = tsne_df2.loc[tsne_df2['Iteration'] == iter+1] # Next iteration
-
-      # Plot the predictions with an arrow indicating going from iteration n to iteration n+1
-      plt.plot(iteration_df['X'], iteration_df['Y'], marker="o", markersize=5, color=model_color[cnt])
-      ax.quiver(iteration_df['X'], iteration_df['Y'], (iteration_next_df['X'].values[0]-iteration_df['X'].values[0]), (iteration_next_df['Y'].values[0]-iteration_df['Y'].values[0]), color=colors[iter-start+1], angles='xy', scale_units='xy', scale=1, alpha = 0.9)
-      plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=5, color=model_color[cnt])
-
-      # Make a Gold star if the datapoint matches one of the top ten values
-      for i in range(start, iter):
-        iteration_df2 = tsne_df2.loc[tsne_df2['Iteration'] == i]
-        for index, row in top_ten_percent.iterrows():
-          if row['SMILES'] == iteration_df2['SMILES'].values:
-            plt.plot(iteration_df2['X'], iteration_df2['Y'], marker="*", markersize=20, markerfacecolor='#fbb61a', markeredgewidth=1, markeredgecolor='k')
-
-    plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, model, start, end), facecolor='white')
-    
-    cnt += 1

@@ -1,5 +1,8 @@
 ## Code for Model Evaluation
 
+#### chemical_diversity_analysis.py
+* Evaluate the scaffold composition and Tanimoto similarity of selected leads during active learning.
+
 #### cross_validations.py
 * Test model performance using 5x10-fold cross-validation on benchmarking datasets.
 

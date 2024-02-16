@@ -40,7 +40,7 @@ def fp_list_from_smiles_list(smiles_list, n_bits=2048):
 
 def fp_as_array(mol,n_bits=2048):
     fp = AllChem.GetMorganFingerprintAsBitVect(mol, 2, nBits=n_bits)
-    arr = np.zeros((1,), np.int)
+    arr = np.zeros((1,), int)
     DataStructs.ConvertToNumpyArray(fp, arr)
     return arr
 
@@ -61,9 +61,9 @@ def get_color_gradient(color1, color2, n):
 
 
 # Adjustable parameters 
-dataset = 'CHEMBL3887887' # Dataset of interest ADJUST
-start = 20 # Which iteration you want to start plotting with (starts at 1)
-end = 41 # Which iteration you want to end plotting with
+dataset = 'CHEMBL232-1' # Dataset of interest ADJUST
+start = 1 # Which iteration you want to start plotting with (starts at 1)
+end = 16 # Which iteration you want to end plotting with
 colors = get_color_gradient('#DDDDDD', '#000000', end-start+2) # Choose color scale for arrows in hex code
     
 
@@ -88,51 +88,46 @@ tsne_df = pd.DataFrame(crds_embedded,columns=["X","Y"])
 tsne_df['SMILES'] = df['SMILES']
     
 
-
-
 ################
 ### Plotting ###    
 ################
 
-models = ['Random', 'RF', 'CP', 'DD']
-model_color = ['k', '#bc3754', '#31688e', '#721f81']
-cnt = 0 # Counter for model colors
+models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Random_Selection']
+model_short_names = ['AD', 'CP', 'RF', 'Random']
+model_color = ['#721f81', '#31688e', '#bc3754', 'k']
+cnt = 0 
 
-for model in models:
+for i in range(len(models)):
     
-    # Read
-    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/Plotting/{}/{}_train_round_{}.csv'.format(model, dataset, model)).rename({'Y': 'Values'}, axis=1)
-
+    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL100_ExternalTest_{}_R1/{}_train_round_{}.csv'.format(model_short_names[i], dataset, model[i]).rename({'Y': 'Values'}, axis=1)
     tsne_df2 = pd.merge(tsne_df, result_df, on=['SMILES'], how='inner', indicator=False)
 
-    # Plotting
-    fig= plt.figure()
-
     # Plot background values
-    ax = sns.scatterplot(data=tsne_df,x="X",y="Y",color='lightblue', s=50)
+    fig= plt.figure()
+    ax = sns.scatterplot(data=tsne_df,x="X",y="Y",color='lightblue', s=60)
 
     # Plot top ten percent of values
     top_ten_percent = pd.DataFrame(tsne_df2.nlargest(len(tsne_df2)//10, 'Values'))
-    ax = sns.scatterplot(data=top_ten_percent,x="X",y="Y", marker="*", s=300, color='blue')
-
+    ax = sns.scatterplot(data=top_ten_percent,x="X",y="Y", marker="*", s=360, color='blue')
+    ax.set_axis_off()
 
     for iter in range(start,end + 1):
       iteration_df = tsne_df2.loc[tsne_df2['Iteration'] == iter] # Current iteration
       iteration_next_df = tsne_df2.loc[tsne_df2['Iteration'] == iter+1] # Next iteration
 
       # Plot the predictions with an arrow indicating going from iteration n to iteration n+1
-      plt.plot(iteration_df['X'], iteration_df['Y'], marker="o", markersize=5, color=model_color[cnt])
+      plt.plot(iteration_df['X'], iteration_df['Y'], marker="o", markersize=10, color=model_color[cnt])
       ax.quiver(iteration_df['X'], iteration_df['Y'], (iteration_next_df['X'].values[0]-iteration_df['X'].values[0]), (iteration_next_df['Y'].values[0]-iteration_df['Y'].values[0]), color=colors[iter-start+1], angles='xy', scale_units='xy', scale=1, alpha = 0.9)
-      plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=5, color=model_color[cnt])
+      plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=10, color=model_color[cnt])
 
-      # Make a Gold star if the datapoint matches one of the top ten values
+      # Make a gold star if the datapoint matches one of the top ten values
       for i in range(start, iter):
         iteration_df2 = tsne_df2.loc[tsne_df2['Iteration'] == i]
         for index, row in top_ten_percent.iterrows():
           if row['SMILES'] == iteration_df2['SMILES'].values:
             plt.plot(iteration_df2['X'], iteration_df2['Y'], marker="*", markersize=20, markerfacecolor='#fbb61a', markeredgewidth=1, markeredgecolor='k')
 
-    plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, model, start, end), facecolor='white')
+    plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, model[i], start, end), facecolor='white')
     
     cnt += 1
     

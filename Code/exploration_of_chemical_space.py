@@ -61,7 +61,7 @@ def get_color_gradient(color1, color2, n):
 
 
 # Adjustable parameters 
-dataset = 'CHEMBL232-1' # Dataset of interest ADJUST
+dataset = 'CHEMBL232-1' # Dataset of interest
 start = 1 # Which iteration you want to start plotting with (starts at 1)
 end = 16 # Which iteration you want to end plotting with
 colors = get_color_gradient('#DDDDDD', '#000000', end-start+2) # Choose color scale for arrows in hex code
@@ -95,7 +95,6 @@ tsne_df['SMILES'] = df['SMILES']
 models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Random_Selection']
 model_short_names = ['AD', 'CP', 'RF', 'Random']
 model_color = ['#721f81', '#31688e', '#bc3754', 'k']
-cnt = 0 
 
 for i in range(len(models)):
     
@@ -116,9 +115,9 @@ for i in range(len(models)):
       iteration_next_df = tsne_df2.loc[tsne_df2['Iteration'] == iter+1] # Next iteration
 
       # Plot the predictions with an arrow indicating going from iteration n to iteration n+1
-      plt.plot(iteration_df['X'], iteration_df['Y'], marker="o", markersize=10, color=model_color[cnt])
+      plt.plot(iteration_df['X'], iteration_df['Y'], marker="o", markersize=10, color=model_color[i])
       ax.quiver(iteration_df['X'], iteration_df['Y'], (iteration_next_df['X'].values[0]-iteration_df['X'].values[0]), (iteration_next_df['Y'].values[0]-iteration_df['Y'].values[0]), color=colors[iter-start+1], angles='xy', scale_units='xy', scale=1, alpha = 0.9)
-      plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=10, color=model_color[cnt])
+      plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=10, color=model_color[i])
 
       # Make a gold star if the datapoint matches one of the top ten values
       for i in range(start, iter):
@@ -128,7 +127,5 @@ for i in range(len(models)):
             plt.plot(iteration_df2['X'], iteration_df2['Y'], marker="*", markersize=20, markerfacecolor='#fbb61a', markeredgewidth=1, markeredgecolor='k')
 
     plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, model[i], start, end), facecolor='white')
-    
-    cnt += 1
-    
-    
+
+

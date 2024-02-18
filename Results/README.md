@@ -47,5 +47,3 @@
 #### AL100_External_Test_RF_R1, AL100_External_Test_RF_R2, & AL100_External_Test_RF_R3
 * Provides results for external test sets for Random Forest after training on 100 molecules selected from exploitative active learning.
 
-#### Plotting
-* Contains results from first repeat of active learning with SMILES, true value, predicted value, and the iteration each molecule was added for the three models and random selection. These results are used for the plotting of chemical space through t-SNE.

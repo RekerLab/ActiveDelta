@@ -11,9 +11,10 @@ ActiveDelta is an adaptive active learning approach that leverages paired molecu
 * [numpy](https://numpy.org/)
 * [pandas](https://github.com/pandas-dev/pandas)
 
-Comparison Models
+Base Machine Learning Models
 * [Random Forest](https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.RandomForestRegressor.html)
 * [ChemProp v1.5.2](https://github.com/chemprop/chemprop)
+* [XGBoost](https://xgboost.readthedocs.io/en/stable/gpu/index.html)
 
 Given the larger size of delta datasets, we recommend using a GPU for significantly faster training.
 
@@ -28,7 +29,7 @@ To use ChemProp with GPUs, you will need:
 
 ### Code
 
-Python code for evaluating ActiveDelta and traditional models based on their ability to identify the most potent leads during exploitative active learning.
+Python code for evaluating ActiveDelta and traditional approaches based on their ability to identify the most potent leads during exploitative active learning.
 
 ### Datasets
 

@@ -12,6 +12,7 @@ from rdkit.Chem import AllChem
 from sklearn import metrics
 from scipy import stats as stats
 from sklearn.model_selection import KFold
+from xgboost import XGBRegressor
 from sklearn.ensemble import RandomForestRegressor as RF
 
 
@@ -256,4 +257,100 @@ class Trad_RF(abstractDeltaModel):
 
 
 
+class Trad_XGB(abstractDeltaModel):
+    model = None
+
+    def __init__(self):
+        self.model = XGBRegressor(tree_method='hist', device="cuda")
+
+    def fit(self, x, y, metric='r2'):
+        mols = [Chem.MolFromSmiles(s) for s in x]
+        fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
+        self.model.fit(fps,y) # Fit using traditional methods
+
+    def predict(self, x): # Used for predicting molecular differences
+        mols = [Chem.MolFromSmiles(s) for s in x]
+        fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
+        
+        predictions = pd.DataFrame(self.model.predict(fps)) # Predict using traditional methods
+        results = pd.merge(predictions,predictions,how='cross') # Cross merge into pairs after predictions
+        return results['0_y'] - results['0_x']  # Calculate and return the delta values
+
+    def predict_single(self, x): # Used for predicting for only one molecule
+        mols = [Chem.MolFromSmiles(s) for s in x]
+        fps = [np.array(AllChem.GetMorganFingerprintAsBitVect(m,2)) for m in mols]
+        predictions = pd.Series(self.model.predict(fps))
+        return predictions
+    
+    def __str__(self):
+        return "XGBoost"
+
+
+
+class Delta_XGB(abstractDeltaModel):
+    model = None
+
+    def __init__(self):
+        self.model = XGBRegressor(tree_method='hist', device="cuda")
+
+    def fit(self, x, y, metric='r2'):
+        
+        # create pairs of training data
+        train = pd.merge(x, x, how='cross') 
+        y_values = pd.merge(y, y, how='cross')
+        train["Y"] = y_values.Y_y - y_values.Y_x
+        del y_values 
+
+        # Convert SMILES to fingerprints
+        mols_x = [Chem.MolFromSmiles(s_x) for s_x in train[train.columns[0]]]
+        fps_x = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_x, 4, nBits=2048)) for m_x in mols_x]
+        mols_y = [Chem.MolFromSmiles(s_y) for s_y in train[train.columns[1]]]
+        fps_y = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_y, 4, nBits=2048)) for m_y in mols_y]
+
+        # Merge Fingerprints
+        pair_data = pd.DataFrame(data={'Fingerprint_x': list(np.array(fps_x)), 'Fingerprint_y': list(np.array(fps_y))})
+        train['fps'] =  pair_data.Fingerprint_x.combine(pair_data.Fingerprint_y, np.append)
+
+        self.model.fit(np.vstack(train.fps.to_numpy()), train.Y) # Fit 
+
+
+
+    def predict(self, x): # Used for predicting molecular differences
+
+        # create pairs of testing data
+        test = pd.merge(x, x, how='cross') 
+
+        # Convert SMILES to fingerprints
+        mols_x = [Chem.MolFromSmiles(s_x) for s_x in test[test.columns[0]]]
+        fps_x = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_x, 4, nBits=2048)) for m_x in mols_x]
+        mols_y = [Chem.MolFromSmiles(s_x) for s_x in test[test.columns[1]]]
+        fps_y = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_y, 4, nBits=2048)) for m_y in mols_y]
+
+        # Merge Fingerprints
+        pair_data = pd.DataFrame(data={'Fingerprint_x': list(np.array(fps_x)), 'Fingerprint_y': list(np.array(fps_y))})
+        pair_data['fps'] =  pair_data.Fingerprint_x.combine(pair_data.Fingerprint_y, np.append)
+
+        predictions = pd.DataFrame(self.model.predict(np.vstack(pair_data.fps.to_numpy()))) # Predict
+        return predictions
+
+    def predict2(self, x1, x2): # Used for predicting for only one molecule
+        # create pairs of testing data
+        test = pd.merge(x1, x2, how='cross') 
+
+        # Convert SMILES to fingerprints
+        mols_x = [Chem.MolFromSmiles(s_x) for s_x in test[test.columns[0]]]
+        fps_x = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_x, 4, nBits=2048)) for m_x in mols_x]
+        mols_y = [Chem.MolFromSmiles(s_x) for s_x in test[test.columns[1]]]
+        fps_y = [np.array(AllChem.GetMorganFingerprintAsBitVect(m_y, 4, nBits=2048)) for m_y in mols_y]
+
+        # Merge Fingerprints
+        pair_data = pd.DataFrame(data={'Fingerprint_x': list(np.array(fps_x)), 'Fingerprint_y': list(np.array(fps_y))})
+        pair_data['fps'] =  pair_data.Fingerprint_x.combine(pair_data.Fingerprint_y, np.append)
+
+        predictions = pd.DataFrame(self.model.predict(np.vstack(pair_data.fps.to_numpy()))) # Predict
+
+        return predictions
+    
+    def __str__(self):
+        return "Delta_XGBoost"
 

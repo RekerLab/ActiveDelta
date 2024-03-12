@@ -1,7 +1,7 @@
 ## Code for Model Evaluation
 
 #### chemical_diversity_analysis.py
-* Evaluate the scaffold composition and Tanimoto similarity of selected leads during active learning.
+* Evaluate the scaffold composition of selected leads during active learning.
 
 #### exploitative_active_learning.py
 * Test model performance during exploitative active learning starting from 2 random datapoints on benchmarking datasets.

@@ -111,7 +111,7 @@ datasets = ['CHEMBL1075104-1',
  
           
 models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Delta_XGBoost', 'XGBoost', 'Random_Selection']
-model_short_names = ['AD', 'CP', 'RF', 'DXGB', 'XGB', 'Random']
+model_short_names = ['ADCP', 'CP', 'RF', 'ADXGB', 'XGB', 'Random']
 
 for i in range(len(models)):
   unique_scaffold_dataframe = pd.DataFrame(columns = datasets)

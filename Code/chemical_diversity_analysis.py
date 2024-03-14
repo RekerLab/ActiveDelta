@@ -113,70 +113,86 @@ datasets = ['CHEMBL1075104-1',
 models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Delta_XGBoost', 'XGBoost', 'Random_Selection']
 model_short_names = ['ADCP', 'CP', 'RF', 'ADXGB', 'XGB', 'Random']
 
-for i in range(len(models)):
-  unique_scaffold_dataframe = pd.DataFrame(columns = datasets)
-  unique_scaffold_hits_dataframe = pd.DataFrame(columns = datasets)
-  nearest_neighbor_dataframe = pd.DataFrame(columns = datasets)
-  average_similarity_dataframe = pd.DataFrame(columns = datasets)
+groups = ['R1', 'R2', 'R3']
 
-  for dataset in datasets:
-    df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL100_ExternalTest_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, model[i]))
+for group in groups: 
 
-    # Prepare Scaffolds and Fingerprints
-    mols = [Chem.MolFromSmiles(s) for s in df.SMILES]
-    scaffolds = [Chem.MolToSmiles(MurckoScaffold.GetScaffoldForMol(m)) for m in mols]
-    fps_list = [AllChem.GetMorganFingerprintAsBitVect(m, 2, 1024) for m in mols]
-    
-    
-    #########################
-    ### Scaffold Analysis ###
-    #########################
-    
-    # Get Unique Scaffold Count at Each Iteration
-    cnt = 0
-    unique_scaffolds = []
-    unique_scaffold_counter = []
+    for i in range(len(models)):
+      unique_scaffold_dataframe = pd.DataFrame(columns = datasets)
+      unique_scaffold_hits_dataframe = pd.DataFrame(columns = datasets)
 
-    for j in range(len(scaffolds)):
-      if scaffolds[j] in unique_scaffolds:
-        unique_scaffold_counter.append(cnt)
-      else:
-        cnt += 1
-        unique_scaffolds.append(scaffolds[j])
-        unique_scaffold_counter.append(cnt)
+      for dataset in datasets:
+        df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL100_ExternalTest_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]))
 
-    unique_scaffold_dataframe[dataset] = unique_scaffold_counter
-    
-    
-    # Get Unique Scaffold Count at Each Iteration for Only the Hit Compounds
-    df['Hit'] = df.apply(lambda _: '', axis=1)
-    full_dataframe = pd.read_csv("../Datasets/Train/{}_train.csv".format(dataset))
-    
-    top_ten_percent = pd.DataFrame(full_dataframe.nlargest(len(full_dataframe)//10, 'Y')['SMILES'])
-    hit_list = []
+        # Prepare Scaffolds
+        mols = [Chem.MolFromSmiles(s) for s in df.SMILES]
+        scaffolds = [Chem.MolToSmiles(MurckoScaffold.GetScaffoldForMol(m)) for m in mols]   
+        
+        #########################
+        ### Scaffold Analysis ###
+        #########################
+        
+        # Get Unique Scaffold Count at Each Iteration
+        cnt = 0
+        unique_scaffolds = []
+        unique_scaffold_counter = []
 
-    for i in range(len(df['SMILES'])):
-      for index, row in top_ten_percent.iterrows():
-        if row['SMILES'] == df['SMILES'][i]:
-          df['Hit'][i] = 'Yes'
-        else:
-          df['Hit'][i] = 'No'
-    
-    cnt = 0
-    unique_scaffolds_hits = []
-    unique_scaffold_hits_counter = []
+        for j in range(len(scaffolds)):
+          if scaffolds[j] in unique_scaffolds:
+            unique_scaffold_counter.append(cnt)
+          else:
+            cnt += 1
+            unique_scaffolds.append(scaffolds[j])
+            unique_scaffold_counter.append(cnt)
 
-    for i in range(len(scaffolds)):
-      if scaffolds[i] in unique_scaffolds_hits:
-        unique_scaffold_hits_counter.append(cnt)
-      else:
-        if df['Hit'][i] == 'No':
-          unique_scaffold_hits_counter.append(cnt)
-        else:
-          cnt += 1
-          unique_scaffolds_hits.append(scaffolds[i])
-          unique_scaffold_hits_counter.append(cnt)
-    
-    unique_scaffold_hits_dataframe[dataset] = unique_scaffold_hits_counter    
-    
-    
+        unique_scaffold_dataframe[dataset] = unique_scaffold_counter
+        
+        
+        # Get Unique Scaffold Count at Each Iteration for Only the Hit Compounds
+        df['Hit'] = df.apply(lambda _: '', axis=1)
+        full_dataframe = pd.read_csv("../Datasets/Train/{}_train.csv".format(dataset))
+        
+        top_ten_percent = pd.DataFrame(full_dataframe.nlargest(len(full_dataframe)//10, 'Y')['SMILES'])
+        hit_list = []
+
+        for i in range(len(df['SMILES'])):
+          for index, row in top_ten_percent.iterrows():
+            if row['SMILES'] == df['SMILES'][i]:
+              df['Hit'][i] = 'Yes'
+            else:
+              df['Hit'][i] = 'No'
+        
+        cnt = 0
+        unique_scaffolds_hits = []
+        unique_scaffold_hits_counter = []
+
+        for i in range(len(scaffolds)):
+          if scaffolds[i] in unique_scaffolds_hits:
+            unique_scaffold_hits_counter.append(cnt)
+          else:
+            if df['Hit'][i] == 'No':
+              unique_scaffold_hits_counter.append(cnt)
+            else:
+              cnt += 1
+              unique_scaffolds_hits.append(scaffolds[i])
+              unique_scaffold_hits_counter.append(cnt)
+        
+        unique_scaffold_hits_dataframe[dataset] = unique_scaffold_hits_counter    
+        
+      # Save the scaffolds for all compounds
+      unique_scaffold_dataframe['Mean'] = unique_scaffold_dataframe.mean(axis=1)
+      unique_scaffold_dataframe['Median'] = unique_scaffold_dataframe.median(axis=1)
+      unique_scaffold_dataframe['Std'] = unique_scaffold_dataframe.std(axis=1)
+      unique_scaffold_dataframe['SEM'] = unique_scaffold_dataframe.sem(axis=1)
+      unique_scaffold_dataframe_summary = unique_scaffold_dataframe[['Mean', 'Median', 'Std', 'SEM']]
+      unique_scaffold_dataframe_summary.to_csv('Unique_Scaffolds_{}_Summary_{}.csv'.format(models[i], group), index = False)
+      unique_scaffold_dataframe.to_csv('Unique_Scaffolds_{}_{}.csv'.format(models[i], group), index = False)        
+        
+      # Save the scaffolds for the hit compounds
+      unique_scaffold_dataframe['Mean'] = unique_scaffold_dataframe.mean(axis=1)
+      unique_scaffold_dataframe['Median'] = unique_scaffold_dataframe.median(axis=1)
+      unique_scaffold_dataframe['Std'] = unique_scaffold_dataframe.std(axis=1)
+      unique_scaffold_dataframe['SEM'] = unique_scaffold_dataframe.sem(axis=1)
+      unique_scaffold_dataframe_summary = unique_scaffold_dataframe[['Mean', 'Median', 'Std', 'SEM']]
+      unique_scaffold_dataframe_summary.to_csv('Unique_Scaffolds_Hits_{}_Summary_{}.csv'.format(models[i], group), index = False)
+      unique_scaffold_dataframe.to_csv('Unique_Scaffolds_Hits_{}_{}.csv'.format(models[i], group), index = False)

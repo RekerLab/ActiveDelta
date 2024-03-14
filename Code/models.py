@@ -30,7 +30,7 @@ class abstractDeltaModel(metaclass=abc.ABCMeta):
 
 
 
-class DeepDelta(abstractDeltaModel):
+class DeepDelta(abstractDeltaModel): # Used for ActiveDelta implementation of Chemprop active learning
     epochs = None
     dirpath = None 
 
@@ -131,7 +131,7 @@ class DeepDelta(abstractDeltaModel):
 
 
 
-class Trad_ChemProp(abstractDeltaModel):
+class Trad_ChemProp(abstractDeltaModel): # Used for standard implementation of Chemprop active learning
     epochs = None
     dirpath = None  
     dirpath_single = None
@@ -227,7 +227,7 @@ class Trad_ChemProp(abstractDeltaModel):
 
 
 
-class Trad_RF(abstractDeltaModel):
+class Trad_RF(abstractDeltaModel): # Used for standard implementation of random forest active learning
     model = None
 
     def __init__(self):
@@ -257,7 +257,7 @@ class Trad_RF(abstractDeltaModel):
 
 
 
-class Trad_XGB(abstractDeltaModel):
+class Trad_XGB(abstractDeltaModel): # Used for standard implementation of XGBoost active learning
     model = None
 
     def __init__(self):
@@ -287,7 +287,7 @@ class Trad_XGB(abstractDeltaModel):
 
 
 
-class Delta_XGB(abstractDeltaModel):
+class Delta_XGB(abstractDeltaModel): # Used for ActiveDelta implementation of XGBoost active learning
     model = None
 
     def __init__(self):

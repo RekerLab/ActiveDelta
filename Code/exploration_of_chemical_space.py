@@ -92,13 +92,13 @@ tsne_df['SMILES'] = df['SMILES']
 ### Plotting ###    
 ################
 
-models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Random_Selection']
-model_short_names = ['AD', 'CP', 'RF', 'Random']
-model_color = ['#721f81', '#31688e', '#bc3754', 'k']
+models = ['DeepDelta5', 'ChemProp50', 'Delta_XGBoost', 'XGBoost', 'RandomForest', 'Random_Selection']
+model_short_names = ['ADCP', 'CP', 'ADXGB', 'XGB', 'RF', 'Random']
+model_color = ['#721f81', '#31688e', 'b', 'g', '#bc3754', 'k']
 
 for i in range(len(models)):
     
-    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL100_ExternalTest_{}_R1/{}_train_round_{}.csv'.format(model_short_names[i], dataset, model[i]).rename({'Y': 'Values'}, axis=1)
+    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]).rename({'Y': 'Values'}, axis=1)
     tsne_df2 = pd.merge(tsne_df, result_df, on=['SMILES'], how='inner', indicator=False)
 
     # Plot background values
@@ -126,6 +126,6 @@ for i in range(len(models)):
           if row['SMILES'] == iteration_df2['SMILES'].values:
             plt.plot(iteration_df2['X'], iteration_df2['Y'], marker="*", markersize=20, markerfacecolor='#fbb61a', markeredgewidth=1, markeredgecolor='k')
 
-    plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, model[i], start, end), facecolor='white')
+    plt.savefig("t-SNE_{}_{}_{}_to_{}.png".format(dataset, models[i], start, end), facecolor='white')
 
 

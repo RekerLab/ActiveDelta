@@ -12,12 +12,10 @@ import pandas as pd
 from rdkit import Chem, DataStructs
 from rdkit.Chem import AllChem
 import numpy as np
-from tqdm import tqdm
 import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-import imageio
 import tempfile
 import copy
 
@@ -31,7 +29,7 @@ sns.set_style('whitegrid')
 # Define a couple of functions to convert a list SMILES to a list of fingerprints.
 def fp_list_from_smiles_list(smiles_list, n_bits=2048):
     fp_list = []
-    for smiles in tqdm(smiles_list):
+    for smiles in smiles_list:
         mol = Chem.MolFromSmiles(smiles)
         if mol == None:
             break
@@ -83,7 +81,7 @@ pca = PCA(n_components=50)
 crds = pca.fit_transform(fp_list)
    
 # Run the t-sne on the 50 principal component database we created above. 
-%time crds_embedded = TSNE(n_components=2).fit_transform(crds)
+crds_embedded = TSNE(n_components=2).fit_transform(crds)
 tsne_df = pd.DataFrame(crds_embedded,columns=["X","Y"])
 tsne_df['SMILES'] = df['SMILES']
     
@@ -98,7 +96,7 @@ model_color = ['#721f81', '#31688e', 'b', 'g', '#bc3754', 'k']
 
 for i in range(len(models)):
     
-    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]).rename({'Y': 'Values'}, axis=1)
+    result_df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i])).rename({'Y': 'Values'}, axis=1)
     tsne_df2 = pd.merge(tsne_df, result_df, on=['SMILES'], how='inner', indicator=False)
 
     # Plot background values
@@ -120,8 +118,8 @@ for i in range(len(models)):
       plt.plot(iteration_next_df['X'], iteration_next_df['Y'], marker="o", markersize=10, color=model_color[i])
 
       # Make a gold star if the datapoint matches one of the top ten values
-      for i in range(start, iter):
-        iteration_df2 = tsne_df2.loc[tsne_df2['Iteration'] == i]
+      for j in range(start, iter):
+        iteration_df2 = tsne_df2.loc[tsne_df2['Iteration'] == j]
         for index, row in top_ten_percent.iterrows():
           if row['SMILES'] == iteration_df2['SMILES'].values:
             plt.plot(iteration_df2['X'], iteration_df2['Y'], marker="*", markersize=20, markerfacecolor='#fbb61a', markeredgewidth=1, markeredgecolor='k')

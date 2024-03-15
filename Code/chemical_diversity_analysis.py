@@ -122,7 +122,7 @@ for group in groups:
       unique_scaffold_hits_dataframe = pd.DataFrame(columns = datasets)
 
       for dataset in datasets:
-        df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL100_ExternalTest_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]))
+        df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]))
 
         # Prepare Scaffolds
         mols = [Chem.MolFromSmiles(s) for s in df.SMILES]
@@ -155,26 +155,26 @@ for group in groups:
         top_ten_percent = pd.DataFrame(full_dataframe.nlargest(len(full_dataframe)//10, 'Y')['SMILES'])
         hit_list = []
 
-        for i in range(len(df['SMILES'])):
+        for k in range(len(df['SMILES'])):
           for index, row in top_ten_percent.iterrows():
-            if row['SMILES'] == df['SMILES'][i]:
-              df['Hit'][i] = 'Yes'
+            if row['SMILES'] == df['SMILES'][k]:
+              df['Hit'][k] = 'Yes'
             else:
-              df['Hit'][i] = 'No'
+              df['Hit'][k] = 'No'
         
         cnt = 0
         unique_scaffolds_hits = []
         unique_scaffold_hits_counter = []
 
-        for i in range(len(scaffolds)):
-          if scaffolds[i] in unique_scaffolds_hits:
+        for l in range(len(scaffolds)):
+          if scaffolds[l] in unique_scaffolds_hits:
             unique_scaffold_hits_counter.append(cnt)
           else:
-            if df['Hit'][i] == 'No':
+            if df['Hit'][l] == 'No':
               unique_scaffold_hits_counter.append(cnt)
             else:
               cnt += 1
-              unique_scaffolds_hits.append(scaffolds[i])
+              unique_scaffolds_hits.append(scaffolds[l])
               unique_scaffold_hits_counter.append(cnt)
         
         unique_scaffold_hits_dataframe[dataset] = unique_scaffold_hits_counter    

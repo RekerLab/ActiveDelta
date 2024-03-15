@@ -106,7 +106,6 @@ for i in range(len(models)):
     # Plot top ten percent of values
     top_ten_percent = pd.DataFrame(tsne_df2.nlargest(len(tsne_df2)//10, 'Values'))
     ax = sns.scatterplot(data=top_ten_percent,x="X",y="Y", marker="*", s=360, color='blue')
-    ax.set_axis_off()
 
     for iter in range(start,end + 1):
       iteration_df = tsne_df2.loc[tsne_df2['Iteration'] == iter] # Current iteration

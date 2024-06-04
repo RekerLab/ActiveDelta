@@ -3,7 +3,11 @@
 
 ## Overview
 
-ActiveDelta is an adaptive active learning approach that leverages paired molecular representations to predict molecular improvements from the best current training compound to prioritize molecules for training set expansion.  
+ActiveDelta is an adaptive active learning approach that leverages paired molecular representations to predict molecular improvements from the best current training compound to prioritize molecules for data aquisition.  
+
+The associated publication is currently under review. 
+
+We would like to thank the Chemprop, XGBoost, and the Scikit-learn developers for making their machine learning algorithms publicly available.
 
 ## Requirements
 * [RDKit](https://www.rdkit.org/docs/Install.html)

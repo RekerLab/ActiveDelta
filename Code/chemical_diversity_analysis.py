@@ -122,7 +122,7 @@ for group in groups:
       unique_scaffold_hits_dataframe = pd.DataFrame(columns = datasets)
 
       for dataset in datasets:
-        df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_R1/{}_train_round_{}_200_R1.csv'.format(model_short_names[i], dataset, models[i]))
+        df = pd.read_csv('../Results/Exploitative_Active_Learning_Results/AL_Exploitative_{}_{}/{}_train_round_{}_200_{}.csv'.format(model_short_names[i], group, dataset, models[i], group))
 
         # Prepare Scaffolds
         mols = [Chem.MolFromSmiles(s) for s in df.SMILES]

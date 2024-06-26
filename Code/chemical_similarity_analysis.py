@@ -143,9 +143,9 @@ for fingerprint in fingerprints:
           train_df = pd.read_csv('../Datasets/Train/{}_train.csv'.format(dataset))
           test_set = pd.read_csv("../Datasets/Test/{}_test.csv".format(dataset))
           try:
-            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_Predictions.csv'.format(model_short_names[i], group, dataset, model[i], group)).T
+            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_Predictions.csv'.format(model_short_names[i], group, dataset, models[i], group)).T
           except:
-            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_PredictionsCorrect.csv'.format(model_short_names[i], group, dataset, model[i], group)).T
+            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_PredictionsCorrect.csv'.format(model_short_names[i], group, dataset, models[i], group)).T
           potent_molecule_df.columns = ['True', 'Pred']
           Preds = potent_molecule_df['Pred']
           Preds = [float(i) for i in Preds]

@@ -109,11 +109,11 @@ datasets = ['CHEMBL1075104-1',
  
  
  
-###############################################
-##      Nearest Neighbor Similarity of       ##
-## External Lead Predicted to be Most Potent ##
-##        Compared to Training Data          ##
-###############################################
+#################################################
+##       Nearest Neighbor Similarity of        ##
+##  External Lead Predicted to be Most Potent  ##
+##         Compared to Training Data           ##
+#################################################
 
 models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Delta_XGBoost', 'XGBoost']
 model_short_names = ['ADCP', 'CP', 'RF', 'ADXGB', 'XGB']

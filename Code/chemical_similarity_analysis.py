@@ -108,12 +108,12 @@ datasets = ['CHEMBL1075104-1',
 'CHEMBL1908389-1']
  
  
+ 
 ###############################################
 ##      Nearest Neighbor Similarity of       ##
 ## External Lead Predicted to be Most Potent ##
 ##        Compared to Training Data          ##
 ###############################################
-
 
 models = ['DeepDelta5', 'ChemProp50', 'RandomForest', 'Delta_XGBoost', 'XGBoost']
 model_short_names = ['ADCP', 'CP', 'RF', 'ADXGB', 'XGB']
@@ -126,9 +126,9 @@ for fingerprint in fingerprints:
 
       final_results = pd.DataFrame({'Dataset': datasets})
       final_results["DeepDelta5"] = np.nan
-      final_results["Delta_XGBoost"] = np.nan
       final_results["ChemProp50"] = np.nan
       final_results["RandomForest"] = np.nan
+      final_results["Delta_XGBoost"] = np.nan
       final_results["XGBoost"] = np.nan
          
       for i in range(len(models)):
@@ -143,10 +143,10 @@ for fingerprint in fingerprints:
           train_df = pd.read_csv('../Datasets/Train/{}_train.csv'.format(dataset))
           test_set = pd.read_csv("../Datasets/Test/{}_test.csv".format(dataset))
           try:
-            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_Predictions.csv'.format(model_short_names[i], group,dataset, model[i], group)).T
+            potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_Predictions.csv'.format(model_short_names[i], group, dataset, model[i], group)).T
           except:
             potent_molecule_df = pd.read_csv('../Results/External_Test_Results/AL100_ExternalTest_{}_{}/{}_{}_AL100_{}_Test_Single_PredictionsCorrect.csv'.format(model_short_names[i], group, dataset, model[i], group)).T
-          potent_molecule_df.columns =['True', 'Pred']
+          potent_molecule_df.columns = ['True', 'Pred']
           Preds = potent_molecule_df['Pred']
           Preds = [float(i) for i in Preds]
           test_set['Pred'] = Preds
@@ -156,7 +156,7 @@ for fingerprint in fingerprints:
           potent_molecule = potent_molecule.reset_index()
           potent_molecule_mol = Chem.MolFromSmiles(potent_molecule['SMILES'][0])
           
-          # Prepare fingerprints of this molecule
+          # Get fingerprints of this molecule
           if fingerprint == 'Morgan':
             potent_molecule_fp = AllChem.GetMorganFingerprintAsBitVect(potent_molecule_mol)
           elif fingerprint == 'MACCS': 
@@ -164,7 +164,7 @@ for fingerprint in fingerprints:
           elif fingerprint == 'AtomPair': 
             potent_molecule_fp = AllChem.GetAtomPairFingerprint(potent_molecule_mol)
           
-          # Prepare Fingerprints of training data
+          # Get fingerprints of training data
           mols = [Chem.MolFromSmiles(s) for s in train_df.SMILES]
           if fingerprint == 'Morgan':
             fps_list = [AllChem.GetMorganFingerprintAsBitVect(m, 2, 1024) for m in mols]
@@ -173,7 +173,7 @@ for fingerprint in fingerprints:
           elif fingerprint == 'AtomPair': 
             fps_list = [AllChem.GetAtomPairFingerprint(m) for m in mols]
           
-          # Get Maximum similarity to the external molecule predicted to be most potent
+          # Get maximum similarity to the external molecule predicted to be most potent from any training datapoint
           NN_similarity_ = max(DataStructs.BulkTanimotoSimilarity(potent_molecule, fps_list))
           similarities['Value'][dataset_number] = NN_similarity
 
@@ -181,21 +181,15 @@ for fingerprint in fingerprints:
 
       final_results.to_csv('TanimotoSimilaritiesToTrainingSet_{}_{}.csv'.format(fingerprint, group), index = False)
 
-      
-      
-  
-  
-  
-  
-  
  
-#######################################
-##  Average Tanimoto Similarity of   ##
-##   Compounds Selected During the   ##
-##  First Stages of Active Learning  ##
-#######################################
+ 
+##########################################
+##  Average Tanimoto Similarity of the  ##
+##    Compounds Selected During the     ##
+##   First Stages of Active Learning    ##
+##########################################
 
-iterations = ['15', '30', '45'] # Representing iterations 1-15, 16-30, and 31-45 
+iterations = ['15', '30', '45'] # Representing iterations 1-15, 16-30, and 31-45, respectively 
 
 for fingerprint in fingerprints:
 
@@ -205,9 +199,9 @@ for fingerprint in fingerprints:
 
           final_results = pd.DataFrame({'Dataset': datasets})
           final_results["DeepDelta5"] = np.nan
-          final_results["Delta_XGBoost"] = np.nan
           final_results["ChemProp50"] = np.nan
           final_results["RandomForest"] = np.nan
+          final_results["Delta_XGBoost"] = np.nan
           final_results["XGBoost"] = np.nan
           
           for i in range(len(models)):
@@ -227,7 +221,7 @@ for fingerprint in fingerprints:
               else:
                 df = df[df['Iteration'].between(31, 45)]      
               
-              # Prepare Fingerprints of training data
+              # Get fingerprints of data
               mols = [Chem.MolFromSmiles(s) for s in train_df.SMILES]
               if fingerprint == 'Morgan':
                 fps_list = [AllChem.GetMorganFingerprintAsBitVect(m, 2, 1024) for m in mols]
@@ -236,7 +230,7 @@ for fingerprint in fingerprints:
               elif fingerprint == 'AtomPair':
                 fps_list = [AllChem.GetAtomPairFingerprint(m) for m in mols]
                 
-              # Get Average Similarity
+              # Get average similarity within each iteration range
               similarity_list = sum([DataStructs.BulkTanimotoSimilarity(fps_list[i], fps_list[i+1:]) for i in range(len(fps_list) - 1)], [])
               similarities['Value'][dataset_number] = statistics.mean(similarity_list)
 

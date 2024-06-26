@@ -158,7 +158,7 @@ for fingerprint in fingerprints:
           
           # Get fingerprints of this molecule
           if fingerprint == 'Morgan':
-            potent_molecule_fp = AllChem.GetMorganFingerprintAsBitVect(potent_molecule_mol)
+            potent_molecule_fp = AllChem.GetMorganFingerprintAsBitVect(potent_molecule_mol, 2, 1024)
           elif fingerprint == 'MACCS': 
             potent_molecule_fp = AllChem.GetMACCSKeysFingerprint(potent_molecule_mol)
           elif fingerprint == 'AtomPair': 

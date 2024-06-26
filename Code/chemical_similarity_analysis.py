@@ -177,7 +177,7 @@ for fingerprint in fingerprints:
           NN_similarity_ = max(DataStructs.BulkTanimotoSimilarity(potent_molecule, fps_list))
           similarities['Value'][dataset_number] = NN_similarity
 
-        final_results[model[i]] = similarities['Value']     
+        final_results[models[i]] = similarities['Value']     
 
       final_results.to_csv('TanimotoSimilaritiesToTrainingSet_{}_{}.csv'.format(fingerprint, group), index = False)
 
@@ -234,6 +234,6 @@ for fingerprint in fingerprints:
               similarity_list = sum([DataStructs.BulkTanimotoSimilarity(fps_list[i], fps_list[i+1:]) for i in range(len(fps_list) - 1)], [])
               similarities['Value'][dataset_number] = statistics.mean(similarity_list)
 
-            final_results[model[i]] = similarities['Value']     
+            final_results[models[i]] = similarities['Value']     
 
           final_results.to_csv('AverageSimilarities_{}_{}_{}.csv'.format(fingerprint, group, iteration), index = False)

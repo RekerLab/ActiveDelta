@@ -1,5 +1,5 @@
 
-![ActiveDelta](https://github.com/RekerLab/ActiveDelta/assets/127516906/c5424406-01cc-4571-8179-8610d184ff3b)
+![GraphicalAbstractSimple](https://github.com/user-attachments/assets/96af7b76-dcb8-43b0-b9da-3c454e0678a0)
 
 ## Overview
 

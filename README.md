@@ -8,7 +8,7 @@ ActiveDelta is an adaptive active learning approach that leverages paired molecu
 For more information, please refer to the [associated publication](https://www.beilstein-journals.org/bjoc/articles/20/185)
 
 If you use this data or code, please kindly cite: Fralish, Z. & Reker, D. (2024). Finding the most potent compounds using active learning on
-molecular pairs Beilstein J. Org. Chem. 20, 2152-2162
+molecular pairs. Beilstein J. Org. Chem. 20, 2152-2162
 
 We would like to thank the Chemprop, XGBoost, and the Scikit-learn developers for making their machine learning algorithms publicly available.
 
